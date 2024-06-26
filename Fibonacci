@@ -1,0 +1,56 @@
+#include <iostream>
+#include <chrono>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+using namespace std::chrono;
+
+long long fibonacci_recursive(int n, unordered_map<int, long long>& memo) {
+    if (n <= 1)
+        return n;
+    if (memo.find(n) != memo.end())
+        return memo[n];
+    memo[n] = fibonacci_recursive(n - 1, memo) + fibonacci_recursive(n - 2, memo);
+    return memo[n];
+}
+
+long long fibonacci_dp(int n) {
+    if (n <= 1)
+        return n;
+
+    vector<long long> fib(n + 1);
+    fib[0] = 0;
+    fib[1] = 1;
+    for (int i = 2; i <= n; ++i) {
+        fib[i] = fib[i - 1] + fib[i - 2];
+    }
+    return fib[n];
+}
+
+void measure_execution_time(int n) {
+    unordered_map<int, long long> memo;
+
+    auto start_recursive = high_resolution_clock::now();
+    long long result_recursive = fibonacci_recursive(n, memo);
+    auto end_recursive = high_resolution_clock::now();
+    auto duration_recursive = duration_cast<microseconds>(end_recursive - start_recursive).count();
+
+    auto start_dp = high_resolution_clock::now();
+    long long result_dp = fibonacci_dp(n);
+    auto end_dp = high_resolution_clock::now();
+    auto duration_dp = duration_cast<microseconds>(end_dp - start_dp).count();
+
+    cout << "n = " << n << endl;
+    cout << "Fibonacci Recursive Result: " << result_recursive << ", Execution Time: " << duration_recursive << " microseconds" << endl;
+    cout << "Fibonacci DP Result: " << result_dp << ", Execution Time: " << duration_dp << " microseconds" << endl;
+    cout << "--------------------------------------------" << endl;
+}
+
+int main() {
+    int test_values[] = {10, 25, 30, 40, 50};
+    for (int n : test_values) {
+        measure_execution_time(n);
+    }
+    return 0;
+}
